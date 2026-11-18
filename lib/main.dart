@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sensors_plus/sensors_plus.dart'; // Módulo 12[cite: 33]
+
+import 'dart:async';
 
 import 'services/nuvem_service.dart';
 import 'screens/mapa_tarefa_screen.dart';
@@ -54,6 +57,9 @@ class _TelaTarefasState extends State<TelaTarefas> {
     Tarefa(titulo: "Entrega da prática integradora", isConcluida: true),
   ];
 
+  // 1. Criamos a variável para gerenciar a "escuta" do sensor
+  StreamSubscription? _sensorSubscription;
+
   // Controlador para capturar o texto digitado na nova tarefa
   final TextEditingController _controladorDeTexto = TextEditingController();
 
@@ -95,6 +101,29 @@ class _TelaTarefasState extends State<TelaTarefas> {
         );
       },
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Utilizando a nova sintaxe da biblioteca
+    _sensorSubscription = accelerometerEventStream().listen((event) {
+      if (event.x.abs() > 15.0) {
+        print("Eixo X: ${event.x.toStringAsFixed(2)}");
+
+        setState(() {
+          tarefas.removeWhere((tarefa) => tarefa.isConcluida);
+        });
+        print("Lixeira esvaziada pelo movimento!");
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // 3. Boa prática: desligar o sensor quando o app fechar!
+    _sensorSubscription?.cancel();
+    super.dispose();
   }
 
   @override
