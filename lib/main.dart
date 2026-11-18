@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'services/nuvem_service.dart';
+import 'screens/mapa_tarefa_screen.dart';
+
 // Ponto de entrada da aplicação
 void main() {
   runApp(const MeuTodoApp());
@@ -104,6 +107,19 @@ class _TelaTarefasState extends State<TelaTarefas> {
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.deepPurple,
+        // -------------------------------------------------------------
+        // NOVIDADE 1 (Módulos 9 e 10): Botão de Nuvem/REST na AppBar
+        // -------------------------------------------------------------
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.cloud_download, color: Colors.white),
+            tooltip: 'Sincronizar da Nuvem',
+            onPressed: () {
+              // Chama o serviço isolado que imprime o JSON no console
+              NuvemService.simularSincronizacao();
+            },
+          ),
+        ],
       ),
       body: ListView.builder(
         itemCount: tarefas.length,
@@ -126,6 +142,22 @@ class _TelaTarefasState extends State<TelaTarefas> {
                 tarefa.isConcluida = novoValor ?? false;
               });
             },
+            // -------------------------------------------------------------
+            // NOVIDADE 2 (Módulo 11): O ícone do Google Maps em cada tarefa
+            // -------------------------------------------------------------
+            secondary: IconButton(
+              icon: const Icon(Icons.map, color: Colors.deepPurple),
+              tooltip: "Definir Local",
+              onPressed: () {
+                // Navegação para a tela do Mapa
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MapaTarefaScreen(),
+                  ),
+                );
+              },
+            ),
           );
         },
       ),
